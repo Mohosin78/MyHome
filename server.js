@@ -6,7 +6,7 @@ const app = express();
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
-app.get('', function(req, res) {
+app.get('/', function(req, res) {
     res.send('Hello, World!');
 });
 
