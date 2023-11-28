@@ -1,2 +1,23 @@
-var _data=[ { l: 23, sr: 20, pin: 1, id: "1", s: true, a: true, name: "Home Out Door",}, ];
-var $id=0; var load_html=(_data)=>{ let html="", container=document.querySelector(".dfx.a.m"); container.innerHTML=""; let ce=(e)=>{ return document.createElement(e);}; for (let i in _data){ let $div0=ce("div"); $div0.className="dfx s"; let $div1=ce("div"); $div1.className="l"; $div1.textContent=_data[i].name; let $spn=ce("span"); let r=_data[i].s; $spn.textContent=r ? "OFF" : "ON"; $spn.onclick=function (){ sec(_data[i].pin, i, this);}; $div0.append($div1); if (_data[i].a){ let $dva=ce("div"); $dva.className="r"; $dva.onclick=()=>{ let _i=document.querySelector(".con-in"); let _o=_i.querySelectorAll("input"); _o[0].value=_data[i].s; _o[1].value=_data[i].l; $id=_data[i].id; _i.style.display="flex";}; $div0.append($dva);} $div0.append($spn); container.append($div0);}}; const server=window.location.origin, _ed=(_e, _t)=>(_e.textContent=_t), sec=(_n, _i, _e)=>{ let _s=_data[_i]["s"]; _ed(_e, "..."); $get(server + "/pin?" + _n + "=" + (_s ? "0" : "1")) .then((_u)=>{ if (_u=="Done"){ _ed(_e, _s==true ? "ON" : "OFF"); _data[_i].s=!_s;}}) .catch((_err)=>alert(_err));}, _ss=8, $get=function (_r){ var __http=new Promise((_res, _rej)=>{ var __time=0; var __url=_r.url || _r; if (!__url) _rej("URL Error."); var __xhttp=new XMLHttpRequest(); __xhttp.onreadystatechange=function (e){ if (this.readyState==4){ if (this.status==200 || this.status==304){ var __val=this.responseText; _res(__val);}} if (this.status >=400){ this.abort(); _rej("Url Not Found.");}}; __xhttp.open("GET", __url, true); __xhttp.send(); var __timer=setInterval(function (){ __time++; if (__time==_ss) clearInterval(__timer); if (__time==_ss) _rej("Request Timeout");}, 1000);}); return __http;}; window.addEventListener("load", ()=>{ $get(server + "/pin") .then((_e)=>{ _e=JSON.parse(_e); for (let i=0; i < _data.length; i++){ _data[i]["s"]=_e[i]==1 ? true : false;} load_html(_data);}) .catch((_err)=>alert(_err));});
+const express = require("express");
+const http = require("http");
+const WebSocket = require("ws");
+
+const app = express();
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ server });
+
+wss.on("connection", (ws) => {
+  console.log("Client connected");
+
+  ws.on("message", (message) => {
+    console.log(`Received: ${message}`);
+  });
+
+  ws.on("close", () => {
+    console.log("Client disconnected");
+  });
+});
+
+server.listen(3000, () => {
+  console.log("Server started on port 3000");
+});
