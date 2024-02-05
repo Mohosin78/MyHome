@@ -1,27 +1,28 @@
-const express = require("express");
-const http = require("http");
-const WebSocket = require("ws");
-
+const express = require('express');
 const app = express();
-const server = http.createServer(app);
-const wss = new WebSocket.Server({ server });
+const http = require('http').createServer(app);
+const io = require('socket.io')(http);
 
-app.get('/', function(req, res) {
-    res.send('Hello, World!');
+app.use(express.static('public'));
+
+app.get("/", (req, res) => res.sendFile(__dirname + "/index.html"))
+
+io.on('connection', (socket) => {
+    console.log('a user connected');
+
+    io.emit("Welcome");
+
+    socket.on('disconnect', () => {
+        console.log('user disconnected');
+    });
+
+    socket.on('chat', (msg) => {
+        io.emit('chat message', msg);
+    });
 });
 
-wss.on("connection", (ws) => {
-  console.log("Client connected");
+const PORT = process.env.PORT || 3000;
 
-  ws.on("message", (message) => {
-    console.log(`Received: ${message}`);
-  });
-
-  ws.on("close", () => {
-    console.log("Client disconnected");
-  });
-});
-
-server.listen(3000, () => {
-  console.log("Server started on port 3000");
+http.listen(PORT, () => {
+    console.log(`listening on *:${PORT}`);
 });
